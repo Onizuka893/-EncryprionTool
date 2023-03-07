@@ -7,6 +7,30 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
 
+        <Grid.RowDefinitions>
+            <RowDefinition Height="25"></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="6*"></RowDefinition>
+            <RowDefinition Height="3*"></RowDefinition>
+            <RowDefinition Height="6*"></RowDefinition>
+            <RowDefinition Height="2*"></RowDefinition>
+        </Grid.RowDefinitions>
+        
+        <Menu BorderThickness="2" Height="25" VerticalAlignment="Top" Grid.ColumnSpan="2" Grid.Row="0">
+            <MenuItem Header="Generate keys" />
+            <MenuItem Header="AES encryption" />
+            <MenuItem Header="RSA encryption" />
+        </Menu>
+
+        <Label Grid.Row="2" Grid.ColumnSpan="2" Height="30px" Width="300px" FontWeight="Bold" FontSize="15" VerticalAlignment="Bottom" Margin="5">Name of key</Label>
+        <TextBox Grid.Row="3" Grid.ColumnSpan="2" Height="30px" Width="300px" VerticalAlignment="Top" Margin="5"></TextBox>
+        <Button x:Name="btnAES" Content="Generate EAS key" Grid.Row="4" Grid.Column="0" Margin="5" Height="40" Width="300"></Button>
+        <Button x:Name="btnRSA" Content="Generate RSA key" Grid.Row="4" Grid.Column="1" Margin="5" Height="40" Width="300"></Button>
+        
     </Grid>
 </Window>
