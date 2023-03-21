@@ -25,8 +25,8 @@
                     </Grid.RowDefinitions>
 
                     <Label Grid.Row="2" Grid.ColumnSpan="2" Height="30px" Width="300px" FontWeight="Bold" FontSize="15" VerticalAlignment="Bottom" Margin="5">Name of key</Label>
-                    <TextBox Grid.Row="3" Grid.ColumnSpan="2" Height="30px" Width="300px" VerticalAlignment="Top" Margin="5"></TextBox>
-                    <Button x:Name="btnAES" Content="Generate AES key" Grid.Row="4" Grid.Column="0" Margin="5" Height="40" Width="300" Click="btnAES_Click"></Button>
+                    <TextBox x:Name="txtName" Grid.Row="3" Grid.ColumnSpan="2" Height="30px" Width="300px" FontSize="15" VerticalAlignment="Top" Margin="5"></TextBox>
+                    <Button x:Name="btnAES" Content="Generate EAS key" Grid.Row="4" Grid.Column="0" Margin="5" Height="40" Width="300" Click="btnAES_Click"></Button>
                     <Button x:Name="btnRSA" Content="Generate RSA key" Grid.Row="4" Grid.Column="1" Margin="5" Height="40" Width="300" Click="btnRSA_Click"></Button>
                 </Grid>
             </TabItem>
