@@ -8,6 +8,8 @@ namespace EncryptionTool
     public class AESHelper : IEncryptor
     {
         private Aes aesAlgorithm;
+        public byte[] IV;
+
         private byte[] key;
         public byte[] Key
         {
@@ -19,11 +21,13 @@ namespace EncryptionTool
             Key = Convert.FromBase64String(key);
         }
 
-        public string EncryptString(string msg)
+        public bool EncryptString(string msg)
         {
             using(var aesAlgorithm = Aes.Create())
             {
                 aesAlgorithm.Key = Key;
+                aesAlgorithm.GenerateIV();
+                IV = aesAlgorithm.IV;
                 ICryptoTransform encryptor = aesAlgorithm.CreateEncryptor();
                 byte[] encryptedData;
 
@@ -38,26 +42,31 @@ namespace EncryptionTool
                         encryptedData = ms.ToArray();
                     }
                 }
-                return Convert.ToBase64String(encryptedData);
+                return StorageHelper.SaveFile(Convert.ToBase64String(encryptedData));
             }
         }
 
         public string DecryptString(string encryptedMsg)
         {
-            string message = string.Empty;
-            ICryptoTransform decryptor = aesAlgorithm.CreateDecryptor();
-            byte[] cipher = Convert.FromBase64String(encryptedMsg);
-            using (MemoryStream ms = new MemoryStream(cipher))
+            using (var aesAlgorithm = Aes.Create())
             {
-                using (CryptoStream cs = new CryptoStream(ms, decryptor, CryptoStreamMode.Read))
+                aesAlgorithm.Key = Key;
+                aesAlgorithm.IV = IV;
+                string message = string.Empty;
+                ICryptoTransform decryptor = aesAlgorithm.CreateDecryptor();
+                byte[] cipher = Convert.FromBase64String(encryptedMsg);
+                using (MemoryStream ms = new MemoryStream(cipher))
                 {
-                    using (StreamReader sr = new StreamReader(cs))
+                    using (CryptoStream cs = new CryptoStream(ms, decryptor, CryptoStreamMode.Read))
                     {
-                        message += $"messagedecrypt : {sr.ReadToEnd()}\n";
+                        using (StreamReader sr = new StreamReader(cs))
+                        {
+                            message += sr.ReadToEnd();
+                        }
                     }
                 }
+                return message;
             }
-            return message;
         }
 
         public string DecryptImage(byte[] data)
