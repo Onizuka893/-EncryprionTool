@@ -6,6 +6,7 @@ using System.Windows;
 using Path = System.IO.Path;
 using System.Threading;
 using System.Xml.Linq;
+using System.Windows.Markup;
 
 namespace EncryptionTool
 {
@@ -17,6 +18,8 @@ namespace EncryptionTool
         public MainWindow()
         {
             InitializeComponent();
+            AESHelper aesHelper = new(KeyHelper.GetAesKey());
+            aesHelper.EncryptImage(StorageHelper.ReadImageFile());
         }
 
         private void btnAES_Click(object sender, RoutedEventArgs e)
@@ -30,14 +33,9 @@ namespace EncryptionTool
                 KeyHelper.GenerateAesKey(txtName.Text);
                 AESHelper aesHelper = new(KeyHelper.GetAesKey());
                 bool hasEncryted = aesHelper.EncryptString("hello");
-                if (hasEncryted)
-                {
-                    MessageBox.Show("Key generated and saved.");
-                }
-                else
-                {
-                    MessageBox.Show("Error");
-                }
+                MessageBox.Show(hasEncryted ? "Key generated and saved." : "Error");
+                string message = StorageHelper.GetFile();
+                MessageBox.Show(aesHelper.DecryptString(message));
             }
         }
 
