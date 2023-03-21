@@ -16,6 +16,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Security.Cryptography;
 using Path = System.IO.Path;
+using System.Threading;
 
 namespace EncryptionTool
 {
@@ -33,44 +34,58 @@ namespace EncryptionTool
 
         private void btnAES_Click(object sender, RoutedEventArgs e)
         {
-            SetDefaultFolder();
+            if(txtName.Text == "")
+            {
+                MessageBox.Show("Please enter a name for the keys!");
+            }
+            else
+            {
+                SetDefaultFolder();
 
-            // Generate AES key and IV
-            AesManaged aes = new AesManaged();
-            aes.GenerateKey();
-            aes.GenerateIV();
-            byte[] aesKey = aes.Key;
-            byte[] aesIV = aes.IV;
+                // Generate AES key and IV
+                AesManaged aes = new AesManaged();
+                aes.GenerateKey();
+                aes.GenerateIV();
+                byte[] aesKey = aes.Key;
+                byte[] aesIV = aes.IV;
 
-            // Save AES key and IV to file
-            string aesKeyFilePath = Path.Combine(defaultFolder, "aesKey.txt");
-            string aesIVFilePath = Path.Combine(defaultFolder, "aesIV.txt");
-            string aesKeyBase64 = Convert.ToBase64String(aesKey);
-            string aesIVBase64 = Convert.ToBase64String(aesIV);
-            File.WriteAllText(aesKeyFilePath, aesKeyBase64);
-            File.WriteAllText(aesIVFilePath, aesIVBase64);
+                // Save AES key and IV to file
+                string aesKeyFilePath = Path.Combine(defaultFolder, $"{txtName.Text}_aesKey.txt");
+                string aesIVFilePath = Path.Combine(defaultFolder, $"{txtName.Text}_aesIV.txt");
+                string aesKeyBase64 = Convert.ToBase64String(aesKey);
+                string aesIVBase64 = Convert.ToBase64String(aesIV);
+                File.WriteAllText(aesKeyFilePath, aesKeyBase64);
+                File.WriteAllText(aesIVFilePath, aesIVBase64);
 
-            MessageBox.Show("Keys generated and saved.");
+                MessageBox.Show("Keys generated and saved.");
+            }
         }
 
         private void btnRSA_Click(object sender, RoutedEventArgs e)
         {
-            SetDefaultFolder();
+            if (txtName.Text == "")
+            {
+                MessageBox.Show("Please enter a name for the keys!");
+            }
+            else
+            {
+                SetDefaultFolder();
 
-            // Generate RSA key pair
-            RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
-            RSAParameters publicKey = rsa.ExportParameters(false);
-            RSAParameters privateKey = rsa.ExportParameters(true);
-            string publicKeyXml = rsa.ToXmlString(false);
-            string privateKeyXml = rsa.ToXmlString(true);
+                // Generate RSA key pair
+                RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
+                RSAParameters publicKey = rsa.ExportParameters(false);
+                RSAParameters privateKey = rsa.ExportParameters(true);
+                string publicKeyXml = rsa.ToXmlString(false);
+                string privateKeyXml = rsa.ToXmlString(true);
 
-            // Save RSA key pair to file
-            string rsaPublicFilePath = Path.Combine(defaultFolder, "rsaPublic.xml");
-            string rsaPrivateFilePath = Path.Combine(defaultFolder, "rsaPrivate.xml");
-            File.WriteAllText(rsaPublicFilePath, publicKeyXml);
-            File.WriteAllText(rsaPrivateFilePath, privateKeyXml);
+                // Save RSA key pair to file
+                string rsaPublicFilePath = Path.Combine(defaultFolder, $"{txtName.Text}_rsaPublic.xml");
+                string rsaPrivateFilePath = Path.Combine(defaultFolder, $"{txtName.Text}_rsaPrivate.xml");
+                File.WriteAllText(rsaPublicFilePath, publicKeyXml);
+                File.WriteAllText(rsaPrivateFilePath, privateKeyXml);
 
-            MessageBox.Show("Keys generated and saved.");
+                MessageBox.Show("Keys generated and saved.");
+            }
         }
 
         private void SetDefaultFolder()
@@ -88,6 +103,5 @@ namespace EncryptionTool
                 defaultFolder = Path.GetDirectoryName(dialog.FileName);
             }
         }
-
     }
 }
