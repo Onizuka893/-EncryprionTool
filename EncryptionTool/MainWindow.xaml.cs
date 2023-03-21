@@ -25,39 +25,6 @@ namespace EncryptionTool
         public MainWindow()
         {
             InitializeComponent();
-            DoThang();
-        }
-
-        public void DoThang()
-        {
-            using (Aes aesAlgorithm = Aes.Create())
-            {
-                string keybase, ivbase, encryptmsg;
-                aesAlgorithm.GenerateKey();
-                aesAlgorithm.GenerateIV();
-                AESHelper aesHelper = new(aesAlgorithm.Key,aesAlgorithm.IV);
-                encryptmsg = aesHelper.EncryptString("testen nigga", out keybase, out ivbase);
-                txtTest.Text += $" message : {encryptmsg}\n";
-                txtTest.Text += $" key : {keybase}\n";
-                txtTest.Text += $" iv : {ivbase}\n";
-
-                aesAlgorithm.Key = Convert.FromBase64String(keybase);
-                aesAlgorithm.IV = Convert.FromBase64String(ivbase);
-                ICryptoTransform decryptor = aesAlgorithm.CreateDecryptor();
-                byte[] cipher = Convert.FromBase64String(encryptmsg);
-                using (MemoryStream ms = new MemoryStream(cipher))
-                {
-                    using (CryptoStream cs = new CryptoStream(ms, decryptor, CryptoStreamMode.Read))
-                    {
-                        using (StreamReader sr = new StreamReader(cs))
-                        {
-                            txtTest.Text += $"messagedecrypt : { sr.ReadToEnd()}\n";
-                        }
-                    }
-                }
-
-
-            }
         }
     }
 }

@@ -1,65 +1,71 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace EncryptionTool
 {
     public class AESHelper : IEncryptor
     {
+        private Aes aesAlgorithm;
         private byte[] key;
         public byte[] Key
         {
             get => key;
             set { if (key != value) key = value; }
         }
-        private byte[] iv;
-        public byte[] Iv
+        public AESHelper(string key)
         {
-            get => iv;
-            set { if (iv != value) iv = value; }
-        }
-        public AESHelper(byte[] key, byte[] iv)
-        {
-            Key = key;
-            Iv = iv;
-        }
-        public void Encrypt(byte[] data)
-        {
-            Aes aesAlgorithm = Aes.Create();
-            aesAlgorithm.Key = Key;
-            aesAlgorithm.IV = Iv;
-            ICryptoTransform encryptor = aesAlgorithm.CreateEncryptor();
+            Key = Convert.FromBase64String(key);
         }
 
-        public string EncryptString(string msg, out string keyBase64, out string vectorBase64)
+        public string EncryptString(string msg)
         {
-            Aes aesAlgorithm = Aes.Create();
-            aesAlgorithm.Key = Key;
-            aesAlgorithm.IV = Iv;
-            keyBase64 = Convert.ToBase64String(aesAlgorithm.Key);
-            vectorBase64 = Convert.ToBase64String(aesAlgorithm.IV);
-            ICryptoTransform encryptor = aesAlgorithm.CreateEncryptor();
-            byte[] encryptedData;
-
-            using (MemoryStream ms = new MemoryStream())
+            using(var aesAlgorithm = Aes.Create())
             {
-                using (CryptoStream cs = new CryptoStream(ms, encryptor, CryptoStreamMode.Write))
+                aesAlgorithm.Key = Key;
+                ICryptoTransform encryptor = aesAlgorithm.CreateEncryptor();
+                byte[] encryptedData;
+
+                using (MemoryStream ms = new MemoryStream())
                 {
-                    using (StreamWriter sw = new StreamWriter(cs))
+                    using (CryptoStream cs = new CryptoStream(ms, encryptor, CryptoStreamMode.Write))
                     {
-                        sw.Write(msg);
+                        using (StreamWriter sw = new StreamWriter(cs))
+                        {
+                            sw.Write(msg);
+                        }
+                        encryptedData = ms.ToArray();
                     }
-                    encryptedData = ms.ToArray();
+                }
+                return Convert.ToBase64String(encryptedData);
+            }
+        }
+
+        public string DecryptString(string encryptedMsg)
+        {
+            string message = string.Empty;
+            ICryptoTransform decryptor = aesAlgorithm.CreateDecryptor();
+            byte[] cipher = Convert.FromBase64String(encryptedMsg);
+            using (MemoryStream ms = new MemoryStream(cipher))
+            {
+                using (CryptoStream cs = new CryptoStream(ms, decryptor, CryptoStreamMode.Read))
+                {
+                    using (StreamReader sr = new StreamReader(cs))
+                    {
+                        message += $"messagedecrypt : {sr.ReadToEnd()}\n";
+                    }
                 }
             }
-            return Convert.ToBase64String(encryptedData);
+            return message;
         }
 
-        public byte[] Decrypt(byte[] data)
+        public string DecryptImage(byte[] data)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string EncryptImage(byte[] data)
         {
             throw new NotImplementedException();
         }
