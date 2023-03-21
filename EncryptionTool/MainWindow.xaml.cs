@@ -49,22 +49,33 @@ namespace EncryptionTool
             }
             else
             {
-                var defaultFolder = StorageHelper.SetDefaultFolder();
+                KeyHelper.GenerateRsaKey(txtName.Text);
+                RSAHelper rsaHelper = new(KeyHelper.GetRsaPublicKey(txtName.Text), KeyHelper.GetRsaPrivateKey(txtName.Text));
+                bool hasEncrypted = rsaHelper.EncryptString("test");
+                if(hasEncrypted)
+                {
+                    MessageBox.Show("Key generated and saved.");
+                }
+                else
+                {
+                    MessageBox.Show("Error");
+                }
 
-                // Generate RSA key pair
-                RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
-                RSAParameters publicKey = rsa.ExportParameters(false);
-                RSAParameters privateKey = rsa.ExportParameters(true);
-                string publicKeyXml = rsa.ToXmlString(false);
-                string privateKeyXml = rsa.ToXmlString(true);
+                //var defaultFolder = StorageHelper.SetDefaultFolder();
 
-                // Save RSA key pair to file
-                string rsaPublicFilePath = Path.Combine(defaultFolder, $"{txtName.Text}_rsaPublic.xml");
-                string rsaPrivateFilePath = Path.Combine(defaultFolder, $"{txtName.Text}_rsaPrivate.xml");
-                File.WriteAllText(rsaPublicFilePath, publicKeyXml);
-                File.WriteAllText(rsaPrivateFilePath, privateKeyXml);
+                //// Generate RSA key pair
+                //RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
+                //RSAParameters publicKey = rsa.ExportParameters(false);
+                //RSAParameters privateKey = rsa.ExportParameters(true);
+                //string publicKeyXml = rsa.ToXmlString(false);
+                //string privateKeyXml = rsa.ToXmlString(true);
 
-                MessageBox.Show("Keys generated and saved.");
+                //// Save RSA key pair to file
+                //string rsaPublicFilePath = Path.Combine(defaultFolder, $"{txtName.Text}_rsaPublic.xml");
+                //string rsaPrivateFilePath = Path.Combine(defaultFolder, $"{txtName.Text}_rsaPrivate.xml");
+                //File.WriteAllText(rsaPublicFilePath, publicKeyXml);
+                //File.WriteAllText(rsaPrivateFilePath, privateKeyXml);
+
             }
         }
     }

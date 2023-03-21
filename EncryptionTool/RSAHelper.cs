@@ -1,31 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Security.Cryptography;
+using System.Security.Cryptography.Xml;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace EncryptionTool
 {
     public class RSAHelper : IEncryptor
     {
 
-        private RSA rsaAlgorithm;
+        private RSACryptoServiceProvider rsa;
 
-        public RSAHelper()
+        public RSAHelper(string publicKeyFilePath, string privateKeyFilePath)
         {
-
-        }
-       
-        public string EncryptString(string plaintext)
-        {
-            
+            rsa = new RSACryptoServiceProvider();
+            rsa.FromXmlString(File.ReadAllText(publicKeyFilePath));
+            rsa.FromXmlString(File.ReadAllText(privateKeyFilePath));
         }
 
-        public string DecryptString(string plaintext)
+        public bool EncryptString(string plainText)
         {
+            byte[] plainTextBytes = Encoding.UTF8.GetBytes(plainText);
+            byte[] cipherTextBytes = rsa.Encrypt(plainTextBytes, false);
+            string cipherTextBase64 = Convert.ToBase64String(cipherTextBytes);
+            return StorageHelper.SaveFile(cipherTextBase64);
+        }
 
+        public string DecryptString(string cipherText)
+        {
+            byte[] cipherTextBytes = Convert.FromBase64String(cipherText);
+            byte[] plainTextBytes = rsa.Decrypt(cipherTextBytes, false);
+            string plainText = Encoding.UTF8.GetString(plainTextBytes);
+            return plainText;
         }
 
         public string DecryptImage(byte[] data)
