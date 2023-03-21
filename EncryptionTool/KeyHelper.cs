@@ -10,7 +10,7 @@ namespace EncryptionTool
 {
     public static class KeyHelper
     {
-        public static void GenerateAesKey()
+        public static void GenerateAesKey(string keyName)
         {
             var path = StorageHelper.SetDefaultFolder();
             byte[] aesKey;
@@ -21,7 +21,7 @@ namespace EncryptionTool
                 aesKey = aes.Key;
             }
             // Save AES key and IV to file
-            string aesKeyFilePath = Path.Combine(path, "aesKey.txt");
+            string aesKeyFilePath = Path.Combine(path, keyName);
             string aesKeyBase64 = Convert.ToBase64String(aesKey);
             File.WriteAllText(aesKeyFilePath, aesKeyBase64);
         }
