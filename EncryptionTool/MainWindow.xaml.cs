@@ -1,11 +1,7 @@
-﻿using Microsoft.Win32;
-using System;
-using System.IO;
+﻿using System.IO;
 using System.Security.Cryptography;
 using System.Windows;
 using Path = System.IO.Path;
-using System.Threading;
-using System.Xml.Linq;
 
 namespace EncryptionTool
 {
@@ -28,16 +24,7 @@ namespace EncryptionTool
             else
             {
                 KeyHelper.GenerateAesKey(txtName.Text);
-                AESHelper aesHelper = new(KeyHelper.GetAesKey());
-                bool hasEncryted = aesHelper.EncryptString("hello");
-                if (hasEncryted)
-                {
-                    MessageBox.Show("Key generated and saved.");
-                }
-                else
-                {
-                    MessageBox.Show("Error");
-                }
+                MessageBox.Show($"Key generated and saved.");
             }
         }
 
@@ -66,6 +53,13 @@ namespace EncryptionTool
 
                 MessageBox.Show("Keys generated and saved.");
             }
+        }
+
+        public void Demo()
+        {
+            AESHelper aesHelper = new("mnNJ8hYUnyMRPYjSE7tnRXaQtl0wd0uB28cfFrRKX6E=");
+            aesHelper.EncryptImage();
+            aesHelper.DecryptImage();
         }
     }
 }

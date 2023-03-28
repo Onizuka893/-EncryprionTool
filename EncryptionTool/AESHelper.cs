@@ -1,7 +1,5 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Security.Cryptography;
-using System.Windows.Input;
 
 namespace EncryptionTool
 {
@@ -23,7 +21,7 @@ namespace EncryptionTool
 
         public bool EncryptString(string msg)
         {
-            using(var aesAlgorithm = Aes.Create())
+            using (var aesAlgorithm = Aes.Create())
             {
                 aesAlgorithm.Key = Key;
                 aesAlgorithm.GenerateIV();
@@ -42,19 +40,21 @@ namespace EncryptionTool
                         encryptedData = ms.ToArray();
                     }
                 }
-                return StorageHelper.SaveFile(Convert.ToBase64String(encryptedData));
+                string obfuscatedString = ObfuscationHelper.ObfuscateFileContent(Convert.ToBase64String(encryptedData), Convert.ToBase64String(IV));
+                return StorageHelper.SaveFile(obfuscatedString);
             }
         }
 
         public string DecryptString(string encryptedMsg)
         {
+            var msgAndIV = ObfuscationHelper.DeObfuscateFileContent(encryptedMsg);
             using (var aesAlgorithm = Aes.Create())
             {
                 aesAlgorithm.Key = Key;
-                aesAlgorithm.IV = IV;
+                aesAlgorithm.IV = Convert.FromBase64String(msgAndIV[1]);
                 string message = string.Empty;
                 ICryptoTransform decryptor = aesAlgorithm.CreateDecryptor();
-                byte[] cipher = Convert.FromBase64String(encryptedMsg);
+                byte[] cipher = Convert.FromBase64String(msgAndIV[0]);
                 using (MemoryStream ms = new MemoryStream(cipher))
                 {
                     using (CryptoStream cs = new CryptoStream(ms, decryptor, CryptoStreamMode.Read))
@@ -69,14 +69,87 @@ namespace EncryptionTool
             }
         }
 
-        public string DecryptImage(byte[] data)
+        public void EncryptImage()
         {
-            throw new NotImplementedException();
+            var filePath = StorageHelper.GetImageFile();
+            var bitmapImageData = ImageHelper.Convert(filePath);
+            byte[] imageHeader = bitmapImageData[..54];
+            byte[] encryptedImageData;
+            byte[] HiddenIv;
+
+            using (var aesAlgorithm = Aes.Create())
+            {
+                aesAlgorithm.Key = Key;
+                //aesAlgorithm.IV = Convert.FromBase64String("RFOW2huw0cLw0izie7k3/A==");
+                aesAlgorithm.GenerateIV();
+                HiddenIv = aesAlgorithm.IV;
+                string message = string.Empty;
+                ICryptoTransform encryptor = aesAlgorithm.CreateEncryptor();
+                using (MemoryStream mstream = new MemoryStream())
+                {
+                    using (CryptoStream cryptoStream = new CryptoStream(mstream, encryptor, CryptoStreamMode.Write))
+                    {
+                        cryptoStream.Write(bitmapImageData, 0, bitmapImageData.Length);
+                    }
+                    encryptedImageData = mstream.ToArray();
+                }
+                for (int i = 0; i < imageHeader.Length; i++)
+                {
+                    encryptedImageData[i] = imageHeader[i];
+                }
+                var tempList = encryptedImageData.ToList();
+                foreach (var b in HiddenIv)
+                {
+                    tempList.Add(b);
+                }
+                encryptedImageData = tempList.ToArray();
+                StorageHelper.SaveImageFromBytes(encryptedImageData, true);
+            }
         }
 
-        public string EncryptImage(byte[] data)
+        public void DecryptImage()
         {
-            throw new NotImplementedException();
+            var filePath = StorageHelper.GetImageFile();
+            var bitmapImageData = File.ReadAllBytes(filePath);
+            byte[] imageHeader = bitmapImageData[..54];
+            byte[] fileSizeHeaderInfo = imageHeader[2..6];
+            int fileSize = BitConverter.ToInt32(fileSizeHeaderInfo, 0);
+            byte[] decryptedImage;
+
+            var aes = Aes.Create();
+            aes.Key = Key;
+            aes.IV = GetHiddenKey(bitmapImageData);
+            bitmapImageData = bitmapImageData.Take(bitmapImageData.Length - 16).ToArray();
+            ICryptoTransform decryptor = aes.CreateDecryptor();
+            using (var ms = new MemoryStream(bitmapImageData))
+            using (var cryptoStream = new CryptoStream(ms, decryptor, CryptoStreamMode.Read))
+            {
+
+                var decrypted = new byte[bitmapImageData.Length];
+                var bytesRead = cryptoStream.Read(decrypted, 0, bitmapImageData.Length);
+
+                decryptedImage = decrypted.Take(bytesRead).ToArray();
+            }
+
+            for (int i = 0; i < imageHeader.Length; i++)
+            {
+                decryptedImage[i] = imageHeader[i];
+            }
+
+            if(decryptedImage.Length != fileSize)
+            {
+                int difference = fileSize - decryptedImage.Length;
+                var list = decryptedImage.ToList();
+                for (int i = 0; i < difference; i++)
+                {
+                    list.Add(ImageMetaData.BMPByte);
+                }
+                decryptedImage = list.ToArray();
+            }
+            StorageHelper.SaveImageFromBytes(decryptedImage);
         }
+
+        public byte[] GetHiddenKey(byte[] data)
+            => data.TakeLast(16).ToArray();
     }
 }
