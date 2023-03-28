@@ -10,6 +10,11 @@ namespace EncryptionTool
 
         private RSACryptoServiceProvider rsa;
 
+        public RSAHelper()
+        {
+            rsa = new RSACryptoServiceProvider();
+        }
+
         public RSAHelper(string publicKeyFilePath, string privateKeyFilePath)
         {
             rsa = new RSACryptoServiceProvider();

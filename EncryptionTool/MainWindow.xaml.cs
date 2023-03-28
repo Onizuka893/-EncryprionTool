@@ -6,6 +6,7 @@ using System.Windows;
 using Path = System.IO.Path;
 using System.Threading;
 using System.Xml.Linq;
+using System.Windows.Media.Animation;
 
 namespace EncryptionTool
 {
@@ -77,6 +78,13 @@ namespace EncryptionTool
                 //File.WriteAllText(rsaPrivateFilePath, privateKeyXml);
 
             }
+        }
+
+        private void btntest_Click(object sender, RoutedEventArgs e)
+        {
+            
+            RSAHelper rsaHelper = new();
+            rsaHelper.DecryptString("pRScICU0OmKsRoLf87QZrBF/FgdTs3Ccc+UdgUA59RF0yUgth8gKQ38MWziKc3RUkl9q1Io5ClcJYKfXSsuOgYUzPwMOrliIeIz2NeAw8Xb+8D1OCkOq69FVqEsbDzJKmgl0yk82lON6RRGwQniGF51kLKbf0/UCzQ0QRnKU5jl6NbLrTVBvlyn+NkbAmXbrER3JlHSHbxWNWQy89T9jM1UqKrQVB8OcMOMUBgpUDzPu2/BryndEcXA5TvVAPO6ansNWVH5r4a2H0umTbWg9mVPThZY4jj44jzog8c4HJze/Vl6PeTGhCFcJq4ieG9d49+boOyavSt7paI8c5TYucg==");
         }
     }
 }
