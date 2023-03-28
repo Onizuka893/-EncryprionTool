@@ -1,6 +1,4 @@
-﻿using Microsoft.Win32;
-using System;
-using System.IO;
+﻿using System.IO;
 using System.Security.Cryptography;
 using System.Windows;
 using Path = System.IO.Path;
@@ -29,16 +27,7 @@ namespace EncryptionTool
             else
             {
                 KeyHelper.GenerateAesKey(txtName.Text);
-                AESHelper aesHelper = new(KeyHelper.GetAesKey());
-                bool hasEncryted = aesHelper.EncryptString("hello");
-                if (hasEncryted)
-                {
-                    MessageBox.Show("Key generated and saved.");
-                }
-                else
-                {
-                    MessageBox.Show("Error");
-                }
+                MessageBox.Show($"Key generated and saved.");
             }
         }
 
@@ -85,6 +74,13 @@ namespace EncryptionTool
             
             RSAHelper rsaHelper = new();
             rsaHelper.DecryptString("pRScICU0OmKsRoLf87QZrBF/FgdTs3Ccc+UdgUA59RF0yUgth8gKQ38MWziKc3RUkl9q1Io5ClcJYKfXSsuOgYUzPwMOrliIeIz2NeAw8Xb+8D1OCkOq69FVqEsbDzJKmgl0yk82lON6RRGwQniGF51kLKbf0/UCzQ0QRnKU5jl6NbLrTVBvlyn+NkbAmXbrER3JlHSHbxWNWQy89T9jM1UqKrQVB8OcMOMUBgpUDzPu2/BryndEcXA5TvVAPO6ansNWVH5r4a2H0umTbWg9mVPThZY4jj44jzog8c4HJze/Vl6PeTGhCFcJq4ieG9d49+boOyavSt7paI8c5TYucg==");
+        }
+
+        public void Demo()
+        {
+            AESHelper aesHelper = new("mnNJ8hYUnyMRPYjSE7tnRXaQtl0wd0uB28cfFrRKX6E=");
+            aesHelper.EncryptImage();
+            aesHelper.DecryptImage();
         }
     }
 }

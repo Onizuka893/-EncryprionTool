@@ -14,6 +14,9 @@
                         <ColumnDefinition Width="234*"></ColumnDefinition>
                         <ColumnDefinition Width="163*"/>
                         <ColumnDefinition Width="397*"></ColumnDefinition>
+                        <ColumnDefinition Width="129*"></ColumnDefinition>
+                        <ColumnDefinition Width="268*"/>
+                        <ColumnDefinition Width="397*"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
 
                     <Grid.RowDefinitions>
@@ -28,6 +31,10 @@
                     <Label Grid.Row="2" Grid.ColumnSpan="2" Height="30px" Width="300px" FontWeight="Bold" FontSize="15" VerticalAlignment="Bottom" Margin="13,0,247,5" Grid.Column="1">Name of key</Label>
                     <TextBox x:Name="txtName" Grid.Row="3" Grid.ColumnSpan="2" Height="30px" Width="300px" FontSize="15" VerticalAlignment="Top" Margin="13,5,247,0" Grid.Column="1"></TextBox>
                     <Button x:Name="btnAES" Content="Generate AES key" Grid.Row="4" Grid.Column="0" Margin="48,43,49,44" Height="40" Width="300" Click="btnAES_Click" Grid.ColumnSpan="2"></Button>
+                    <Button x:Name="btnRSA" Content="Generate RSA key" Grid.Row="4" Grid.Column="2" Margin="49,43,48,44" Height="40" Width="300" Click="btnRSA_Click"></Button>
+                    <Label Grid.Row="2" Grid.ColumnSpan="2" Height="30px" Width="300px" FontWeight="Bold" FontSize="15" VerticalAlignment="Bottom" Margin="118,0,247,5" Grid.Column="1">Name of key</Label>
+                    <TextBox x:Name="txtName" Grid.Row="3" Grid.ColumnSpan="2" Height="30px" Width="300px" FontSize="15" VerticalAlignment="Top" Margin="118,5,247,0" Grid.Column="1"></TextBox>
+                    <Button x:Name="btnAES" Content="Generate EAS key" Grid.Row="4" Grid.Column="0" Margin="48,43,49,44" Height="40" Width="300" Click="btnAES_Click" Grid.ColumnSpan="2"></Button>
                     <Button x:Name="btnRSA" Content="Generate RSA key" Grid.Row="4" Grid.Column="2" Margin="49,43,48,44" Height="40" Width="300" Click="btnRSA_Click"></Button>
                 </Grid>
             </TabItem>

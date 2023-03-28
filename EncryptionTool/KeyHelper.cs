@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,12 +19,13 @@ namespace EncryptionTool
                 aesKey = aes.Key;
             }
             // Save AES key and IV to file
-            string aesKeyFilePath = Path.Combine(path, keyName);
+            string aesKeyFilePath = Path.Combine(path, $"{keyName}.txt");
             string aesKeyBase64 = Convert.ToBase64String(aesKey);
             File.WriteAllText(aesKeyFilePath, aesKeyBase64);
         }
 
         public static string GetAesKey()
+         => StorageHelper.GetFile(true);
         {
             var path = StorageHelper.SetDefaultFolder();
             string aesKeyFilePath = Path.Combine(path, "aesKey.txt");
