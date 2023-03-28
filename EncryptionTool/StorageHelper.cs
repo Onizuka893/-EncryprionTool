@@ -107,6 +107,26 @@ namespace EncryptionTool
             return imageData;
         }
 
+        public static string GetImageFile()
+        {
+            OpenFileDialog theDialog = new()
+            {
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                Title = "Open Encryped Text file",
+                CheckPathExists = true,
+                DefaultExt = "jpg",
+                Filter = "Image Files|*.jpg;*.jpeg;*.png;*.gif;*.tif;*.bmp;...",
+                FilterIndex = 1,
+                RestoreDirectory = true
+            };
+
+            if (theDialog.ShowDialog() == true)
+            {
+                return theDialog.FileName;
+            }
+            return null;
+        }
+
         public static void EncryptImageBody(byte[] body, byte[] header)
         {
             using (Aes aes = Aes.Create())

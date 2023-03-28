@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Drawing;
 using System.IO;
 using System.Reflection.PortableExecutable;
 using System.Security.Cryptography;
+using System.Text.RegularExpressions;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace EncryptionTool
@@ -24,7 +27,7 @@ namespace EncryptionTool
 
         public bool EncryptString(string msg)
         {
-            using(var aesAlgorithm = Aes.Create())
+            using (var aesAlgorithm = Aes.Create())
             {
                 aesAlgorithm.Key = Key;
                 aesAlgorithm.GenerateIV();
@@ -72,70 +75,59 @@ namespace EncryptionTool
             }
         }
 
-        public string DecryptImage(byte[] data)
+        public void DecryptImage()
         {
-            throw new NotImplementedException();
+            var bitmapImageData = File.ReadAllBytes(@"C:\Users\Lenovo\Desktop\onizuka_encrypted.bmp");
+            byte[] imageHeader = bitmapImageData[..40];
+            byte[] decryptedImage;
+
+            var aes = Aes.Create();
+            aes.Key = Convert.FromBase64String("mnNJ8hYUnyMRPYjSE7tnRXaQtl0wd0uB28cfFrRKX6E=");
+            aes.IV = Convert.FromBase64String("RFOW2huw0cLw0izie7k3/A==");
+            ICryptoTransform decryptor = aes.CreateDecryptor();
+            using (var ms = new MemoryStream(bitmapImageData))
+            using (var cryptoStream = new CryptoStream(ms, decryptor, CryptoStreamMode.Read))
+            {
+
+                var dycrypted = new byte[bitmapImageData.Length];
+                var bytesRead = cryptoStream.Read(dycrypted, 0, bitmapImageData.Length);
+
+                decryptedImage = dycrypted.Take(bytesRead).ToArray();
+            }
+
+            for (int i = 0; i < imageHeader.Length; i++)
+            {
+                decryptedImage[i] = imageHeader[i];
+            }
+            File.WriteAllBytes(@"C:\Users\Lenovo\Desktop\onizuka_decrypted.bmp", decryptedImage);
         }
 
-        public string EncryptImage(byte[] data)
+        public void EncryptImage()
         {
-            Dictionary<int, byte> identifiers = new();
-            byte[] imageHeader = data[0..11];
-            byte[] imageBody = data[12..];
+            var bitmapImageData = ImageHelper.Convert();
+            byte[] imageHeader = bitmapImageData[..40];
+            byte[] encryptedImageData;
 
-            var indexesList = imageBody.Select((s, i) => new { i, s })
-            .Where(t => t.s == ImageMetaData.JPEGIdentifier)
-            .Select(t => t.i)
-            .ToList();
-
-            var oldList = indexesList.ToList();
-            indexesList.ToList().ForEach(indexes => { indexesList.Add(indexes + 1); });
-            var newList = indexesList.ToList();
-
-            foreach (var index in newList)
+            using (var aesAlgorithm = Aes.Create())
             {
-                identifiers.Add(index, imageBody[index]);
-            }
-
-
-            using (Aes aes = Aes.Create())
-            {
-
-                aes.Key = Key;
-                aes.GenerateIV();
-
-                using (MemoryStream ciphertext = new MemoryStream())
+                aesAlgorithm.Key = Convert.FromBase64String("mnNJ8hYUnyMRPYjSE7tnRXaQtl0wd0uB28cfFrRKX6E=");
+                aesAlgorithm.IV = Convert.FromBase64String("RFOW2huw0cLw0izie7k3/A==");
+                string message = string.Empty;
+                ICryptoTransform encryptor = aesAlgorithm.CreateEncryptor();
+                using (MemoryStream mstream = new MemoryStream())
                 {
-                    // Create a CryptoStream to encrypt the data
-                    using (CryptoStream cs = new CryptoStream(ciphertext, aes.CreateEncryptor(), CryptoStreamMode.Write))
+                    using (CryptoStream cryptoStream = new CryptoStream(mstream, encryptor, CryptoStreamMode.Write))
                     {
-                        // Write the plaintext to the CryptoStream
-                        cs.Write(imageBody, 0, imageBody.Length);
+                        cryptoStream.Write(bitmapImageData, 0, bitmapImageData.Length);
                     }
-                    var chiperArray = ciphertext.ToArray();
-                    for(int i = 0; i < chiperArray.Length; i++)
-                    {
-                        if (chiperArray[i] == ImageMetaData.JPEGIdentifier)
-                        {
-                            chiperArray[i] = 0x10;
-                        }
-                    }
-                    foreach (var kvp in identifiers)
-                    {
-                        chiperArray[kvp.Key] = kvp.Value;
-                    }
-                    var fullImage = new byte[imageHeader.Length + chiperArray.Length];
-                    imageHeader.CopyTo(fullImage, 0);
-                    chiperArray.CopyTo(fullImage, imageHeader.Length);
-                    File.WriteAllBytes("Foo6.jpg", fullImage);
-                    //mislukt
-
-
-                    //string test = Convert.ToBase64String(chiperArray);
+                    encryptedImageData = mstream.ToArray();
                 }
+                for (int i = 0; i < imageHeader.Length; i++)
+                {
+                    encryptedImageData[i] = imageHeader[i];
+                }
+                File.WriteAllBytes(@"C:\Users\Lenovo\Desktop\onizuka_encrypted.bmp", encryptedImageData);
             }
-
-            return "johnathan";
         }
     }
 }

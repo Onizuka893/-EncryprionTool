@@ -18,8 +18,9 @@ namespace EncryptionTool
         public MainWindow()
         {
             InitializeComponent();
-            AESHelper aesHelper = new(KeyHelper.GetAesKey());
-            aesHelper.EncryptImage(StorageHelper.ReadImageFile());
+            AESHelper aesHelper = new("mnNJ8hYUnyMRPYjSE7tnRXaQtl0wd0uB28cfFrRKX6E=");
+            aesHelper.EncryptImage();
+            aesHelper.DecryptImage();
         }
 
         private void btnAES_Click(object sender, RoutedEventArgs e)
@@ -32,10 +33,12 @@ namespace EncryptionTool
             {
                 KeyHelper.GenerateAesKey(txtName.Text);
                 AESHelper aesHelper = new(KeyHelper.GetAesKey());
-                bool hasEncryted = aesHelper.EncryptString("hello");
-                MessageBox.Show(hasEncryted ? "Key generated and saved." : "Error");
-                string message = StorageHelper.GetFile();
-                MessageBox.Show(aesHelper.DecryptString(message));
+                //aesHelper.EncryptImage();
+                aesHelper.DecryptImage();
+                //bool hasEncryted = aesHelper.EncryptString("hello");
+                MessageBox.Show($"Key generated and saved.");
+                //string message = StorageHelper.GetFile();
+                //MessageBox.Show(aesHelper.DecryptString(message));
             }
         }
 
