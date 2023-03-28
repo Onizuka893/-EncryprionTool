@@ -1,12 +1,7 @@
-﻿using Microsoft.Win32;
-using System;
-using System.IO;
+﻿using System.IO;
 using System.Security.Cryptography;
 using System.Windows;
 using Path = System.IO.Path;
-using System.Threading;
-using System.Xml.Linq;
-using System.Windows.Markup;
 
 namespace EncryptionTool
 {
@@ -18,9 +13,6 @@ namespace EncryptionTool
         public MainWindow()
         {
             InitializeComponent();
-            AESHelper aesHelper = new("mnNJ8hYUnyMRPYjSE7tnRXaQtl0wd0uB28cfFrRKX6E=");
-            aesHelper.EncryptImage();
-            aesHelper.DecryptImage();
         }
 
         private void btnAES_Click(object sender, RoutedEventArgs e)
@@ -32,13 +24,7 @@ namespace EncryptionTool
             else
             {
                 KeyHelper.GenerateAesKey(txtName.Text);
-                AESHelper aesHelper = new(KeyHelper.GetAesKey());
-                //aesHelper.EncryptImage();
-                aesHelper.DecryptImage();
-                //bool hasEncryted = aesHelper.EncryptString("hello");
                 MessageBox.Show($"Key generated and saved.");
-                //string message = StorageHelper.GetFile();
-                //MessageBox.Show(aesHelper.DecryptString(message));
             }
         }
 
@@ -67,6 +53,13 @@ namespace EncryptionTool
 
                 MessageBox.Show("Keys generated and saved.");
             }
+        }
+
+        public void Demo()
+        {
+            AESHelper aesHelper = new("mnNJ8hYUnyMRPYjSE7tnRXaQtl0wd0uB28cfFrRKX6E=");
+            aesHelper.EncryptImage();
+            aesHelper.DecryptImage();
         }
     }
 }

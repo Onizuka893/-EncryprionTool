@@ -1,9 +1,6 @@
 ﻿using Microsoft.Win32;
 using System.IO;
-using System.Security.Cryptography;
 using System.Windows;
-using System.Windows.Input;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace EncryptionTool
 {
@@ -112,7 +109,7 @@ namespace EncryptionTool
             OpenFileDialog theDialog = new()
             {
                 InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-                Title = "Open Encryped Text file",
+                Title = "Open Image File",
                 CheckPathExists = true,
                 DefaultExt = "jpg",
                 Filter = "Image Files|*.jpg;*.jpeg;*.png;*.gif;*.tif;*.bmp;...",
@@ -127,59 +124,35 @@ namespace EncryptionTool
             return null;
         }
 
-        public static void EncryptImageBody(byte[] body, byte[] header)
+        public static bool SaveImageFromBytes(byte[] imageData, bool encypted = false)
         {
-            using (Aes aes = Aes.Create())
+            SaveFileDialog sfd = new()
             {
-                aes.Key = Convert.FromBase64String(StorageHelper.GetFile(true));
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                Title = encypted ? "Save encrypted Image File" : "Save Image File",
+                CheckPathExists = true,
+                DefaultExt = "bmp",
+                Filter = "Image Files|*.jpg;*.jpeg;*.png;*.bmp;...",
+                FilterIndex = 1,
+                RestoreDirectory = true
+            };
 
-                // Generate a random initialization vector (IV)
-                aes.GenerateIV();
-
-                // Create a memory stream to hold the ciphertext
-                using (MemoryStream ciphertext = new MemoryStream())
-                {
-                    // Create a CryptoStream to encrypt the data
-                    using (CryptoStream cs = new CryptoStream(ciphertext, aes.CreateEncryptor(), CryptoStreamMode.Write))
-                    {
-                        // Write the plaintext to the CryptoStream
-                        cs.Write(body, 0, body.Length);
-                    }
-
-                    string test = Convert.ToBase64String(ciphertext.ToArray());
-                    DecryptImage(test, header, Convert.ToBase64String(aes.IV));
-                }
+            if (sfd.ShowDialog() == true)
+            {
+                File.WriteAllBytes(sfd.FileName, imageData);
+                return true;
             }
+            return false;
         }
 
-        public static void DecryptImage(string body, byte[] header, string iv)
+        public static bool DeleteConvertedImage(string imagePath)
         {
-            using (var aesAlgorithm = Aes.Create())
+            if (File.Exists(imagePath))
             {
-                aesAlgorithm.Key = Convert.FromBase64String(StorageHelper.GetFile(true));
-                aesAlgorithm.IV = Convert.FromBase64String(iv);
-                string message = string.Empty;
-                ICryptoTransform decryptor = aesAlgorithm.CreateDecryptor();
-                byte[] cipher = Convert.FromBase64String(body);
-                byte[] imagebody = decryptor.TransformFinalBlock(cipher, 0, cipher.Length);
-                var fullImage = new byte[header.Length + cipher.Length];
-                header.CopyTo(fullImage, 0);
-                cipher.CopyTo(fullImage, header.Length);
-
-                File.WriteAllBytes("Foo2.txt", fullImage);
-
-                //using (MemoryStream ms = new MemoryStream(cipher))
-                //{
-                //    using (CryptoStream cs = new CryptoStream(ms, decryptor, CryptoStreamMode.Read))
-                //    {
-                //        using (StreamReader sr = new StreamReader(cs))
-                //        {
-                //            message = sr.ReadToEnd();
-                //        }
-                //        var bytes = Convert.FromBase64String(message);
-                //    }
-                //}
+                File.Delete(imagePath);
+                return true;
             }
+            return false;
         }
     }
 }

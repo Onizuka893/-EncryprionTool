@@ -1,11 +1,5 @@
-﻿using System;
-using System.Drawing;
-using System.IO;
-using System.Reflection.PortableExecutable;
+﻿using System.IO;
 using System.Security.Cryptography;
-using System.Text.RegularExpressions;
-using System.Windows.Controls;
-using System.Windows.Input;
 
 namespace EncryptionTool
 {
@@ -75,43 +69,20 @@ namespace EncryptionTool
             }
         }
 
-        public void DecryptImage()
-        {
-            var bitmapImageData = File.ReadAllBytes(@"C:\Users\Lenovo\Desktop\onizuka_encrypted.bmp");
-            byte[] imageHeader = bitmapImageData[..40];
-            byte[] decryptedImage;
-
-            var aes = Aes.Create();
-            aes.Key = Convert.FromBase64String("mnNJ8hYUnyMRPYjSE7tnRXaQtl0wd0uB28cfFrRKX6E=");
-            aes.IV = Convert.FromBase64String("RFOW2huw0cLw0izie7k3/A==");
-            ICryptoTransform decryptor = aes.CreateDecryptor();
-            using (var ms = new MemoryStream(bitmapImageData))
-            using (var cryptoStream = new CryptoStream(ms, decryptor, CryptoStreamMode.Read))
-            {
-
-                var dycrypted = new byte[bitmapImageData.Length];
-                var bytesRead = cryptoStream.Read(dycrypted, 0, bitmapImageData.Length);
-
-                decryptedImage = dycrypted.Take(bytesRead).ToArray();
-            }
-
-            for (int i = 0; i < imageHeader.Length; i++)
-            {
-                decryptedImage[i] = imageHeader[i];
-            }
-            File.WriteAllBytes(@"C:\Users\Lenovo\Desktop\onizuka_decrypted.bmp", decryptedImage);
-        }
-
         public void EncryptImage()
         {
-            var bitmapImageData = ImageHelper.Convert();
-            byte[] imageHeader = bitmapImageData[..40];
+            var filePath = StorageHelper.GetImageFile();
+            var bitmapImageData = ImageHelper.Convert(filePath);
+            byte[] imageHeader = bitmapImageData[..54];
             byte[] encryptedImageData;
+            byte[] HiddenIv;
 
             using (var aesAlgorithm = Aes.Create())
             {
-                aesAlgorithm.Key = Convert.FromBase64String("mnNJ8hYUnyMRPYjSE7tnRXaQtl0wd0uB28cfFrRKX6E=");
-                aesAlgorithm.IV = Convert.FromBase64String("RFOW2huw0cLw0izie7k3/A==");
+                aesAlgorithm.Key = Key;
+                //aesAlgorithm.IV = Convert.FromBase64String("RFOW2huw0cLw0izie7k3/A==");
+                aesAlgorithm.GenerateIV();
+                HiddenIv = aesAlgorithm.IV;
                 string message = string.Empty;
                 ICryptoTransform encryptor = aesAlgorithm.CreateEncryptor();
                 using (MemoryStream mstream = new MemoryStream())
@@ -126,8 +97,59 @@ namespace EncryptionTool
                 {
                     encryptedImageData[i] = imageHeader[i];
                 }
-                File.WriteAllBytes(@"C:\Users\Lenovo\Desktop\onizuka_encrypted.bmp", encryptedImageData);
+                var tempList = encryptedImageData.ToList();
+                foreach (var b in HiddenIv)
+                {
+                    tempList.Add(b);
+                }
+                encryptedImageData = tempList.ToArray();
+                StorageHelper.SaveImageFromBytes(encryptedImageData, true);
             }
         }
+
+        public void DecryptImage()
+        {
+            var filePath = StorageHelper.GetImageFile();
+            var bitmapImageData = File.ReadAllBytes(filePath);
+            byte[] imageHeader = bitmapImageData[..54];
+            byte[] fileSizeHeaderInfo = imageHeader[2..6];
+            int fileSize = BitConverter.ToInt32(fileSizeHeaderInfo, 0);
+            byte[] decryptedImage;
+
+            var aes = Aes.Create();
+            aes.Key = Key;
+            aes.IV = GetHiddenKey(bitmapImageData);
+            bitmapImageData = bitmapImageData.Take(bitmapImageData.Length - 16).ToArray();
+            ICryptoTransform decryptor = aes.CreateDecryptor();
+            using (var ms = new MemoryStream(bitmapImageData))
+            using (var cryptoStream = new CryptoStream(ms, decryptor, CryptoStreamMode.Read))
+            {
+
+                var decrypted = new byte[bitmapImageData.Length];
+                var bytesRead = cryptoStream.Read(decrypted, 0, bitmapImageData.Length);
+
+                decryptedImage = decrypted.Take(bytesRead).ToArray();
+            }
+
+            for (int i = 0; i < imageHeader.Length; i++)
+            {
+                decryptedImage[i] = imageHeader[i];
+            }
+
+            if(decryptedImage.Length != fileSize)
+            {
+                int difference = fileSize - decryptedImage.Length;
+                var list = decryptedImage.ToList();
+                for (int i = 0; i < difference; i++)
+                {
+                    list.Add(ImageMetaData.BMPByte);
+                }
+                decryptedImage = list.ToArray();
+            }
+            StorageHelper.SaveImageFromBytes(decryptedImage);
+        }
+
+        public byte[] GetHiddenKey(byte[] data)
+            => data.TakeLast(16).ToArray();
     }
 }
