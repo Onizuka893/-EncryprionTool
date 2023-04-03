@@ -24,13 +24,8 @@ namespace EncryptionTool
             File.WriteAllText(aesKeyFilePath, aesKeyBase64);
         }
 
-        public static string GetAesKey()
-         => StorageHelper.GetFile(true);
-        {
-            var path = StorageHelper.SetDefaultFolder();
-            string aesKeyFilePath = Path.Combine(path, "aesKey.txt");
-            return File.ReadAllText(aesKeyFilePath, Encoding.UTF8);
-        }
+        public static string GetAesKey() => StorageHelper.GetFile(true);
+        
 
         public static void GenerateRsaKey(string keyName)
         {

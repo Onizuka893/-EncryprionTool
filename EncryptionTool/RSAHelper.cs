@@ -38,12 +38,12 @@ namespace EncryptionTool
             return plainText;
         }
 
-        public string DecryptImage(byte[] data)
+        public void EncryptImage()
         {
             throw new NotImplementedException();
         }
 
-        public string EncryptImage(byte[] data)
+        public void DecryptImage()
         {
             throw new NotImplementedException();
         }
