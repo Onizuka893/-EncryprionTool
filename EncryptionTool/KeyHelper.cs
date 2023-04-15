@@ -27,10 +27,10 @@ namespace EncryptionTool
         public static string GetAesKey() => StorageHelper.GetFile(true);
         
 
-        public static void GenerateRsaKey(string keyName)
+        public static void GenerateRsaKey(string keyName, int keySize)
         {
             var path = StorageHelper.SetDefaultFolder();
-            RSACryptoServiceProvider rsa = new RSACryptoServiceProvider(2048);
+            RSACryptoServiceProvider rsa = new RSACryptoServiceProvider(keySize);
             string privateKeyXml = rsa.ToXmlString(true);
             string publicKeyXml = rsa.ToXmlString(false);
 
@@ -47,15 +47,6 @@ namespace EncryptionTool
             var path = StorageHelper.SetDefaultFolder();
             string rsaPrivateFilePath = Path.Combine(path, $"{keyName}_Private.xml");
             return rsaPrivateFilePath;
-
-            //// Read the private key from its file
-            //string privateKeyXml = File.ReadAllText(rsaPrivateFilePath);
-
-            //// Create an instance of the RSA algorithm and import the private key
-            //RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
-            //rsa.FromXmlString(privateKeyXml);
-
-            //return rsa;
         }
 
         public static string GetRsaPublicKey(string keyName)
@@ -63,15 +54,6 @@ namespace EncryptionTool
             var path = StorageHelper.SetDefaultFolder();
             string rsaPublicFilePath = Path.Combine(path, $"{keyName}_Public.xml");
             return rsaPublicFilePath;
-
-            //// Read the public key from its file
-            //string publicKeyXml = File.ReadAllText(rsaPublicFilePath);
-
-            //// Create an instance of the RSA algorithm and import the public key
-            //RSACryptoServiceProvider rsa = new RSACryptoServiceProvider();
-            //rsa.FromXmlString(publicKeyXml);
-
-            //return rsa;
         }
     }
 }

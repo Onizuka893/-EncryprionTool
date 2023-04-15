@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:EncryptionTool"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="550" Width="900">
     <Grid>
         <TabControl>
             <TabItem Header="Generate keys">
@@ -22,20 +22,23 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="25"></RowDefinition>
                         <RowDefinition Height="*"></RowDefinition>
-                        <RowDefinition Height="6*"></RowDefinition>
+                        <RowDefinition Height="2*"></RowDefinition>
+                        <RowDefinition Height="3*"></RowDefinition>
+                        <RowDefinition Height="2*"></RowDefinition>
                         <RowDefinition Height="3*"></RowDefinition>
                         <RowDefinition Height="6*"></RowDefinition>
-                        <RowDefinition Height="2*"></RowDefinition>
                     </Grid.RowDefinitions>
 
                     <!--<Label Grid.Row="2" Grid.ColumnSpan="2" Height="30px" Width="300px" FontWeight="Bold" FontSize="15" VerticalAlignment="Bottom" Margin="13,0,247,5" Grid.Column="1">Name of key</Label>
                     <TextBox x:Name="txtName" Grid.Row="3" Grid.ColumnSpan="2" Height="30px" Width="300px" FontSize="15" VerticalAlignment="Top" Margin="13,5,247,0" Grid.Column="1"></TextBox>
                     <Button x:Name="btnAES" Content="Generate AES key" Grid.Row="4" Grid.Column="0" Margin="48,43,49,44" Height="40" Width="300" Click="btnAES_Click" Grid.ColumnSpan="2"></Button>
                     <Button x:Name="btnRSA" Content="Generate RSA key" Grid.Row="4" Grid.Column="2" Margin="49,43,48,44" Height="40" Width="300" Click="btnRSA_Click"></Button>-->
-                    <Label Grid.Row="2" Grid.ColumnSpan="2" Height="30px" Width="300px" FontWeight="Bold" FontSize="15" VerticalAlignment="Bottom" Margin="118,0,247,5" Grid.Column="1">Name of key</Label>
-                    <TextBox x:Name="txtName" Grid.Row="3" Grid.ColumnSpan="2" Height="30px" Width="300px" FontSize="15" VerticalAlignment="Top" Margin="118,5,247,0" Grid.Column="1"></TextBox>
-                    <Button x:Name="btnAES" Content="Generate EAS key" Grid.Row="4" Grid.Column="0" Margin="48,43,49,44" Height="40" Width="300" Click="btnAES_Click" Grid.ColumnSpan="2"></Button>
-                    <Button x:Name="btnRSA" Content="Generate RSA key" Grid.Row="4" Grid.Column="2" Margin="49,43,48,44" Height="40" Width="300" Click="btnRSA_Click"></Button>
+                    <Label Grid.Row="2" Grid.ColumnSpan="2" Height="30" Width="300" FontWeight="Bold" FontSize="15" VerticalAlignment="Bottom" Margin="118,0,247,5" Grid.Column="1"  HorizontalContentAlignment="Center">Name of key</Label>
+                    <TextBox x:Name="txtName" Grid.Row="3" Grid.ColumnSpan="3" Height="30" Width="300" FontSize="15" VerticalAlignment="Top" Margin="118,5,247,0" Grid.Column="1"></TextBox>
+                    <Label Grid.Row="4" Grid.ColumnSpan="2" Height="30" Width="300" FontWeight="Bold" FontSize="15" VerticalAlignment="Bottom" Margin="118,0,247,5" Grid.Column="1" HorizontalContentAlignment="Center">Select Key Size</Label>
+                    <ComboBox x:Name="cmbSize" Grid.Row="5" Grid.ColumnSpan="3" Height="30" Width="300" FontSize="15" VerticalAlignment="Top" Margin="118,5,247,0" Grid.Column="1"></ComboBox>
+                    <Button x:Name="btnAES" Content="Generate AES key" Grid.Row="6" Grid.Column="0" Margin="48,43,49,44" Height="40" Width="300" Click="btnAES_Click" Grid.ColumnSpan="2"></Button>
+                    <Button x:Name="btnRSA" Content="Generate RSA key" Grid.Row="6" Grid.Column="2" Margin="49,43,48,44" Height="40" Width="300" Click="btnRSA_Click"></Button>
                 </Grid>
             </TabItem>
 
@@ -47,7 +50,48 @@
 
 
             <TabItem Header="RSA Encryption">
-                <Button x:Name="btntest" Content="Decrypt Key"  Height="40" Width="300" Click="btntest_Click"></Button>
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="200"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="200"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="32*"/>
+                        <ColumnDefinition Width="19*"/>
+                        <ColumnDefinition Width="286*"/>
+                        <ColumnDefinition Width="337*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Label Grid.Row="0" Grid.Column="0" Content="Enter a text:" Margin="5 0 5 5" Grid.ColumnSpan="3"/>
+                    <TextBox Grid.Row="1" Grid.Column="0"  Margin="10 0 10 10" VerticalScrollBarVisibility="Auto" Grid.ColumnSpan="3"/>
+
+                    <Label Grid.Row="2" Grid.Column="0" Content="CipherText:" Margin="5 0 5 5" Grid.ColumnSpan="3"/>
+                    <TextBox Grid.Row="3" Grid.Column="0" Margin="10 0 10 10" VerticalScrollBarVisibility="Auto" Grid.ColumnSpan="3"/>
+
+                    <Label Grid.Row="0" Grid.Column="3" Content="Private Key:" Margin="5,0,5,5"/>
+                    <TextBox Grid.Row="1" Grid.Column="3" Margin="10,0,10,10" VerticalScrollBarVisibility="Auto"/>
+
+                    <Label Grid.Row="2" Grid.Column="3" Content="Public Key:" Margin="5,0,5,5"/>
+                    <TextBox Grid.Row="3" Grid.Column="3" Margin="10,0,10,10" VerticalScrollBarVisibility="Auto"/>
+
+
+                    <StackPanel Grid.Row="2" Grid.Column="4" Grid.RowSpan="2" Orientation="Vertical" Margin="10,10,10,10">
+                        <Button Content="Encrypt" Width="100" Height="30" Margin="0 0 0 5"/>
+                        <Button Content="Decrypt" Width="100"  Height="30" Margin="0 0 0 5"/>
+                        <Button Content="Publish Key Pair"  Height="30" Width="100" Margin="0 0 0 5" Click="PublishKeyPair_Click"/>
+                        <Button Content="Exit" Width="100"  Height="30" Margin="0 0 0 5"/>
+                    </StackPanel>
+
+                    <StatusBar Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="5" Margin="10" Height="20">
+                        <TextBlock x:Name="statusTextBlock" TextAlignment="Center" Text="Ciphertext Completed"/>
+                    </StatusBar>
+                </Grid>
             </TabItem>
         </TabControl>
     </Grid>
